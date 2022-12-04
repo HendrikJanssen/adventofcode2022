@@ -2,17 +2,6 @@ package day2
 
 import java.io.File
 
-enum class Shape {
-    ROCK,
-    PAPER,
-    SCISSORS
-}
-
-fun Shape.beats(): Shape = when (this) {
-    Shape.ROCK -> Shape.SCISSORS
-    Shape.PAPER -> Shape.ROCK
-    Shape.SCISSORS -> Shape.PAPER
-}
 
 fun main() {
     val plays = File("src/main/resources/day2.txt").readLines().map {
@@ -34,27 +23,17 @@ fun main() {
     }
 
     var score = 0
-    for (round in plays) {
-        score += scoreForRound(round.first, round.second)
+    for ((opponent, you) in plays) {
+        score += calcOutcome(opponent, you).toScore()
 
-        score += when(round.second) {
-            Shape.ROCK -> 1
-            Shape.PAPER -> 2
-            Shape.SCISSORS -> 3
-        }
+        score += you.score()
     }
 
     println("For ${plays.size} rounds, you got a score of $score")
 }
 
-fun scoreForRound(opponent: Shape, you: Shape): Int {
-    if (opponent == you) {
-        return 3 // draw
-    }
-
-    return if (you.beats() == opponent) {
-        6
-    } else {
-        0
-    }
+fun calcOutcome(opponent: Shape, you: Shape): Outcome = when (opponent) {
+    you -> Outcome.DRAW
+    you.beats() -> Outcome.WIN
+    else -> Outcome.LOSE
 }
